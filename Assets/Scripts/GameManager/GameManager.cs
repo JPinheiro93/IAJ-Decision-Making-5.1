@@ -51,8 +51,6 @@ namespace Assets.Scripts.GameManager
             this.enemies.AddRange(this.orcs);
             this.dragons = GameObject.FindGameObjectsWithTag("Dragon").ToList();
             this.enemies.AddRange(this.dragons);
-
-            //this.autonomousCharacter.Start();
         }
 
         public void Update()
@@ -152,7 +150,6 @@ namespace Assets.Scripts.GameManager
             }
         }
 			
-
         public void GetManaPotion(GameObject manaPotion)
         {
             if (manaPotion != null && manaPotion.activeSelf && InPotionRange(manaPotion))
@@ -173,12 +170,10 @@ namespace Assets.Scripts.GameManager
             }
         }
 
-
         private bool CheckRange(GameObject obj, float maximumSqrDistance)
         {
             return (obj.transform.position - this.characterData.CharacterGameObject.transform.position).sqrMagnitude <= maximumSqrDistance;
         }
-
 
         public bool InMeleeRange(GameObject enemy)
         {

@@ -6,7 +6,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 {
     public class DepthLimitedGOAPDecisionMaking
     {
-        public const int MAX_DEPTH = 3;
+        public const int MAX_DEPTH = 7;
         public int ActionCombinationsProcessedPerFrame { get; set; }
         public float TotalProcessingTime { get; set; }
         public int TotalActionCombinationsProcessed { get; set; }
@@ -23,7 +23,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 
         public DepthLimitedGOAPDecisionMaking(CurrentStateWorldModel currentStateWorldModel, List<Action> actions, List<Goal> goals)
         {
-            this.ActionCombinationsProcessedPerFrame = 200;
+            this.ActionCombinationsProcessedPerFrame = 10;
             this.Goals = goals;
             this.InitialWorldModel = currentStateWorldModel;
         }
@@ -45,28 +45,43 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 
         public Action ChooseAction()
         {
-			var processedActions = 0;
+			var processedActionCombinations = 0;
 			var startTime = Time.realtimeSinceStartup;
-            var initialState = this.InitialWorldModel.GenerateChildWorldModel();
 
-            //TODO: these values implement a random agent (obtains victory for lab5, though!!!)
-            this.BestAction = initialState.GetNextAction();
-            this.BestActionSequence[0] = initialState.GetNextAction();
-            this.BestActionSequence[1] = initialState.GetNextAction();
-            this.BestActionSequence[2] = initialState.GetNextAction();
-            this.BestDiscontentmentValue = initialState.CalculateDiscontentment(this.Goals);
+            while (processedActionCombinations < this.ActionCombinationsProcessedPerFrame && this.CurrentDepth >= 0)
+            {
+                if (this.CurrentDepth >= MAX_DEPTH)
+                {
+                    var currentDiscontentmentValue = this.Models[this.CurrentDepth].CalculateDiscontentment(this.Goals);
+                    if (currentDiscontentmentValue < this.BestDiscontentmentValue)
+                    {
+                        this.BestDiscontentmentValue = currentDiscontentmentValue;
+                        this.BestAction = this.ActionPerLevel[0];
+                        this.ActionPerLevel.CopyTo(this.BestActionSequence, 0);
+                    }
+                    this.CurrentDepth--;
+                    processedActionCombinations++;
+                }
+                else
+                {
+                    var nextAction = this.Models[this.CurrentDepth].GetNextAction();
+                    this.ActionPerLevel[this.CurrentDepth] = nextAction;
 
-            //TODO: implement!
-            //while (processedActions <= this.ActionCombinationsProcessedPerFrame)
-            //{
-            //    Models.
-            //    foreach (var action in initialState.GetExecutableActions())
-            //    {
-
-            //    }
-            //}
+                    if (nextAction != null)
+                    {
+                        this.Models[this.CurrentDepth + 1] = this.Models[this.CurrentDepth].GenerateChildWorldModel();
+                        nextAction.ApplyActionEffects(this.Models[this.CurrentDepth + 1]);
+                        this.CurrentDepth++;
+                    }
+                    else
+                    {
+                        this.CurrentDepth--;
+                    }
+                }
+            }
 
             this.TotalProcessingTime += Time.realtimeSinceStartup - startTime;
+            this.TotalActionCombinationsProcessed += processedActionCombinations;
 			this.InProgress = false;
 			return this.BestAction;
         }

@@ -21,6 +21,21 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+[Uu]nityPackageManager/
+[Tt]emp/
+[Ll]ibrary/
+[Pp]rojectSettings/
+[Aa]ssets/Character/
+[Aa]ssets/ChestFree/
+[Aa]ssets/Low-Poly Weapons/
+[Aa]ssets/Materials/
+[Aa]ssets/RAIN/
+[Aa]ssets/Resources/
+[Aa]ssets/Scenes/
+[Aa]ssets/Standard Assets/
+[Aa]ssets/Toon_RTS
+[Aa]ssets/Toon_RTS_demo
+[Aa]ssets/UnityVS/
 
 # Visual Studio 2015 cache/options directory
 .vs/

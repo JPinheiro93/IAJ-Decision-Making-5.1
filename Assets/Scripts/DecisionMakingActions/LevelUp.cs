@@ -60,7 +60,7 @@ namespace Assets.Scripts.DecisionMakingActions
 
         public override void Execute()
         {
-            //TODO: uncomment
+            //TODO: uncomment LevelUp
             //this.Character.GameManager.LevelUp();
         }
 
