@@ -60,7 +60,8 @@ namespace Assets.Scripts.DecisionMakingActions
 
         public override void Execute()
         {
-            this.Character.GameManager.LevelUp();
+            //TODO: uncomment
+            //this.Character.GameManager.LevelUp();
         }
 
         public override float GetDuration()
