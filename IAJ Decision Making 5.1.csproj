@@ -261,6 +261,7 @@
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\GOB\DepthLimitedGOAPDecisionMaking.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\GOB\Goal.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\GOB\WorldModel.cs" />
+    <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\IDecisionMaking.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\MCTS\MCTS.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\MCTS\MCTSNode.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\MCTS\Reward.cs" />
