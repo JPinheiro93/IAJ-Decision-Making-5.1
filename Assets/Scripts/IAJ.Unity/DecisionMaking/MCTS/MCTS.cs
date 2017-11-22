@@ -2,13 +2,14 @@
 using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 {
     public class MCTS : IDecisionMaking
     {
-        public const float C = 1.4142135623730950488016887242097f; // sqrt(2)
+        public const float ExplorationFactor = 1.4142135623730950488016887242097f; // sqrt(2)
         public bool InProgress { get; set; }
         public int MaxIterations { get; set; }
         public int MaxIterationsProcessedPerFrame { get; set; }
@@ -96,6 +97,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             
             //TODO: bestChild is for what?
             //TODO: should we really return after expansion? Why?
+            //TODO: check where to use BestChild(), and if it is correct to use BestUCTChild here.
             while (!currentNode.State.IsTerminal())
             {
                 nextAction = currentNode.State.GetNextAction();
@@ -105,7 +107,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 }
                 else 
                 {
-                    currentNode = this.BestChild(currentNode);
+                    currentNode = this.BestUCTChild(currentNode);
                     currentSelectionDepth++;
                 }
             }
@@ -144,7 +146,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             return new Reward
             {
                 PlayerID = currentState.GetNextPlayer(),
-                //TODO: score is always 0. Should use heuristic? Or should add goals to MCTS and use Discontentment?
+                //TODO: score is always 0. Either use heuristic, or add goals to MCTS and use Discontentment.
+                // NEVER USE UCT FORMULA HERE! (all zeros initially)
                 Value = currentState.GetScore()
             };
         }
@@ -153,11 +156,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             var currentNode = node;
 
-            //TODO: remodel to multiplayer in lab 7
+            //TODO: check if this is correct for lab 7 (+- thing)
             while (currentNode != null)
             {
                 currentNode.N++;
-                currentNode.Q += reward.Value;
+                currentNode.Q += (node.PlayerID == 0) ? reward.Value : -reward.Value;
                 currentNode = currentNode.Parent;
             }
         }
@@ -178,8 +181,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         //gets the best child of a node, using the UCT formula
         private MCTSNode BestUCTChild(MCTSNode node)
         {
-            //TODO: implement
-            throw new NotImplementedException();
+            return node.ChildNodes.OrderBy(x => (x.Q / x.N) + ExplorationFactor * Math.Sqrt(Math.Log(node.N) / x.N)).First();
         }
 
         //this method is very similar to the bestUCTChild, but it is used to return the final action of the MCTS search, and so we do not care about
