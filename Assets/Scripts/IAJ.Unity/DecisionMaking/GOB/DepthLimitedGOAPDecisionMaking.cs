@@ -1,12 +1,13 @@
 ﻿using Assets.Scripts.GameManager;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 {
-    public class DepthLimitedGOAPDecisionMaking
+    public class DepthLimitedGOAPDecisionMaking : IDecisionMaking
     {
-        public const int MAX_DEPTH = 7;
+        public const int MAX_DEPTH = 7; //TODO: ask prof: changing depth didn't cause any issues, just different action sequences.
         public int ActionCombinationsProcessedPerFrame { get; set; }
         public float TotalProcessingTime { get; set; }
         public int TotalActionCombinationsProcessed { get; set; }
@@ -16,8 +17,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
         private List<Goal> Goals { get; set; }
         private WorldModel[] Models { get; set; }
         private Action[] ActionPerLevel { get; set; }
-        public Action[] BestActionSequence { get; private set; }
-        public Action BestAction { get; private set; }
+        public List<GOB.Action> BestActionSequence { get; set; }
+        public Action BestAction { get; set; }
         public float BestDiscontentmentValue { get; private set; }
         private int CurrentDepth { get; set; }
 
@@ -28,7 +29,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             this.InitialWorldModel = currentStateWorldModel;
         }
 
-        public void InitializeDecisionMakingProcess()
+        public void InitializeDecisionMaking()
         {
             this.InProgress = true;
             this.TotalProcessingTime = 0.0f;
@@ -37,7 +38,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             this.Models = new WorldModel[MAX_DEPTH + 1];
             this.Models[0] = this.InitialWorldModel;
             this.ActionPerLevel = new Action[MAX_DEPTH];
-            this.BestActionSequence = new Action[MAX_DEPTH];
+            this.BestActionSequence = new List<GOB.Action>(MAX_DEPTH);
             this.BestAction = null;
             this.BestDiscontentmentValue = float.MaxValue;
             this.InitialWorldModel.Initialize();
@@ -57,7 +58,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                     {
                         this.BestDiscontentmentValue = currentDiscontentmentValue;
                         this.BestAction = this.ActionPerLevel[0];
-                        this.ActionPerLevel.CopyTo(this.BestActionSequence, 0);
+                        this.BestActionSequence = this.ActionPerLevel.ToList();
                     }
                     this.CurrentDepth--;
                     processedActionCombinations++;
@@ -71,6 +72,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                     {
                         this.Models[this.CurrentDepth + 1] = this.Models[this.CurrentDepth].GenerateChildWorldModel();
                         nextAction.ApplyActionEffects(this.Models[this.CurrentDepth + 1]);
+                        this.Models[this.CurrentDepth + 1].CalculateNextPlayer();
                         this.CurrentDepth++;
                     }
                     else

@@ -111,6 +111,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
         {
             var discontentment = 0.0f;
 
+            //TODO: use distance in order to prioritize goals with similar benefits.
             foreach (var goal in goals)
             {
                 var newValue = this.GetGoalValue(goal.Name);

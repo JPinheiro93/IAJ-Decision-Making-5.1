@@ -13,6 +13,8 @@ using Assets.Scripts.IAJ.Unity.Pathfinding.Heuristics;
 using Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.GoalBounding;
 using Assets.Scripts.IAJ.Unity.Pathfinding.GoalBounding;
 using System.Linq;
+using Assets.Scripts.IAJ.Unity.DecisionMaking;
+using Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS;
 
 namespace Assets.Scripts
 {
@@ -46,7 +48,7 @@ namespace Assets.Scripts
         public List<Action> Actions { get; set; }
         public Action CurrentAction { get; private set; }
         public DynamicCharacter Character { get; private set; }
-        public DepthLimitedGOAPDecisionMaking GOAPDecisionMaking { get; set; }
+        public IDecisionMaking DecisionMaking { get; set; }
         public AStarPathfinding AStarPathfinding;
 
         //private fields for internal use only
@@ -62,8 +64,6 @@ namespace Assets.Scripts
         private Vector3 previousTarget;
 
 		private Animator characterAnimator;
-
-
 
         public void Initialize(NavMeshPathGraph navMeshGraph, AStarPathfinding pathfindingAlgorithm)
         {
@@ -88,7 +88,7 @@ namespace Assets.Scripts
 
             //initialization of the GOB decision making
             //let's start by creating 4 main goals
-
+            //TODO: tune goals to properly kill the enemies and win the game.
             this.SurviveGoal = new Goal(SURVIVE_GOAL, 2.0f);
 
             this.GainXPGoal = new Goal(GAIN_XP_GOAL, 1.0f)
@@ -154,7 +154,10 @@ namespace Assets.Scripts
             }
 
             var worldModel = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
-            this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals);
+
+            // Select Decision-Making Algorithm
+            //this.DecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals);
+            this.DecisionMaking = new MCTS(worldModel);
         }
 
         void Update()
@@ -200,7 +203,7 @@ namespace Assets.Scripts
 
                 //initialize Decision Making Proccess
                 this.CurrentAction = null;
-                this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
+                this.DecisionMaking.InitializeDecisionMaking();
             }
 
             
@@ -248,23 +251,25 @@ namespace Assets.Scripts
 
         private void UpdateDLGOAP()
         {
-            if (this.GOAPDecisionMaking.InProgress)
+            if (this.DecisionMaking.InProgress)
             {
                 //choose an action using the GOB Decision Making process
-                var action = this.GOAPDecisionMaking.ChooseAction();
+                var action = this.DecisionMaking.ChooseAction();
                 if (action != null)
                 {
                     this.CurrentAction = action;
                 }
             }
 
-            this.TotalProcessingTimeText.text = "Process. Time: " + this.GOAPDecisionMaking.TotalProcessingTime.ToString("F");
-            this.BestDiscontentmentText.text = "Best Discontentment: " + this.GOAPDecisionMaking.BestDiscontentmentValue.ToString("F");
-            this.ProcessedActionsText.text = "Act. comb. processed: " + this.GOAPDecisionMaking.TotalActionCombinationsProcessed;
+            this.TotalProcessingTimeText.text = "Process. Time: " + this.DecisionMaking.TotalProcessingTime.ToString("F");
 
-            if (this.GOAPDecisionMaking.BestAction != null)
+            //TODO: debug values removed for decision making generalization (MCTS does not have these values). Either uniform, or delete this.
+            //this.BestDiscontentmentText.text = "Best Discontentment: " + this.DecisionMaking.BestDiscontentmentValue.ToString("F");
+            //this.ProcessedActionsText.text = "Act. comb. processed: " + this.DecisionMaking.TotalActionCombinationsProcessed;
+
+            if (this.DecisionMaking.BestAction != null)
             {
-                var actionText = string.Join(", ", this.GOAPDecisionMaking.BestActionSequence.Select(x => x.Name).ToArray());
+                var actionText = string.Join(", ", this.DecisionMaking.BestActionSequence.Select(x => x.Name).ToArray());
 
                 this.BestActionText.text = "Best Action Sequence: { " + actionText + " }";
             }

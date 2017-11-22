@@ -6,18 +6,18 @@ using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 {
-    public class MCTS
+    public class MCTS : IDecisionMaking
     {
-        public const float C = 1.4f;
-        public bool InProgress { get; private set; }
+        public const float C = 1.4142135623730950488016887242097f; // sqrt(2)
+        public bool InProgress { get; set; }
         public int MaxIterations { get; set; }
         public int MaxIterationsProcessedPerFrame { get; set; }
         public int MaxPlayoutDepthReached { get; private set; }
         public int MaxSelectionDepthReached { get; private set; }
-        public float TotalProcessingTime { get; private set; }
+        public float TotalProcessingTime { get; set; }
+        public GOB.Action BestAction { get; set; }
         public MCTSNode BestFirstChild { get; set; }
-        public List<GOB.Action> BestActionSequence { get; private set; }
-
+        public List<GOB.Action> BestActionSequence { get; set; }
 
         private int CurrentIterations { get; set; }
         private int CurrentIterationsInFrame { get; set; }
@@ -27,8 +27,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         private MCTSNode InitialNode { get; set; }
         private System.Random RandomGenerator { get; set; }
         
-        
-
         public MCTS(CurrentStateWorldModel currentStateWorldModel)
         {
             this.InProgress = false;
@@ -38,8 +36,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             this.RandomGenerator = new System.Random();
         }
 
-
-        public void InitializeMCTSearch()
+        public void InitializeDecisionMaking()
         {
             this.MaxPlayoutDepthReached = 0;
             this.MaxSelectionDepthReached = 0;
@@ -58,45 +55,124 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             this.BestActionSequence = new List<GOB.Action>();
         }
 
-        public GOB.Action Run()
+        public GOB.Action ChooseAction()
         {
-            MCTSNode selectedNode;
+            MCTSNode selectedNode = this.InitialNode;
             Reward reward;
 
             var startTime = Time.realtimeSinceStartup;
             this.CurrentIterationsInFrame = 0;
+            
+            while (this.CurrentIterationsInFrame < this.MaxIterationsProcessedPerFrame 
+                && this.CurrentIterations < this.MaxIterations)
+            {
+                selectedNode = this.Selection(this.InitialNode);
+                reward = this.Playout(selectedNode.State);
+                this.Backpropagate(selectedNode, reward);
 
-            //TODO: implement
-            throw new NotImplementedException();
+                this.CurrentIterations++;
+                this.CurrentIterationsInFrame++;
+            }
+
+            var currentNode = selectedNode;
+            while (currentNode != null && currentNode.Action != null)
+            {
+                this.BestActionSequence.Add(currentNode.Action);
+                currentNode = currentNode.Parent;
+            }
+
+            this.BestAction = selectedNode.Action;
+
+            return this.BestAction;
         }
 
         private MCTSNode Selection(MCTSNode initialNode)
         {
             GOB.Action nextAction;
             MCTSNode currentNode = initialNode;
-            MCTSNode bestChild;
+            //MCTSNode bestChild;
 
+            var currentSelectionDepth = 0;
+            
+            //TODO: bestChild is for what?
+            //TODO: should we really return after expansion? Why?
+            while (!currentNode.State.IsTerminal())
+            {
+                nextAction = currentNode.State.GetNextAction();
+                if (nextAction != null)
+                {
+                    return this.Expand(currentNode, nextAction);
+                }
+                else 
+                {
+                    currentNode = this.BestChild(currentNode);
+                    currentSelectionDepth++;
+                }
+            }
 
-            //TODO: implement
-            throw new NotImplementedException();
+            if (currentSelectionDepth > this.MaxSelectionDepthReached)
+            {
+                this.MaxSelectionDepthReached = currentSelectionDepth;
+            }
+
+            return currentNode;
         }
 
         private Reward Playout(WorldModel initialPlayoutState)
         {
-            //TODO: implement
-            throw new NotImplementedException();
+            GOB.Action nextAction;
+            WorldModel currentState = initialPlayoutState;
+            var currentPlayoutDepth = 0;
+
+            while (!currentState.IsTerminal())
+            {
+                var executableActions = currentState.GetExecutableActions();
+                nextAction = executableActions[this.RandomGenerator.Next(0, executableActions.Length)];
+
+                currentState = currentState.GenerateChildWorldModel();
+                nextAction.ApplyActionEffects(currentState);
+                currentState.CalculateNextPlayer();
+
+                currentPlayoutDepth++;
+            }
+
+            if (currentPlayoutDepth > this.MaxPlayoutDepthReached)
+            {
+                this.MaxPlayoutDepthReached = currentPlayoutDepth;
+            }
+
+            return new Reward
+            {
+                PlayerID = currentState.GetNextPlayer(),
+                //TODO: score is always 0. Should use heuristic? Or should add goals to MCTS and use Discontentment?
+                Value = currentState.GetScore()
+            };
         }
 
         private void Backpropagate(MCTSNode node, Reward reward)
         {
-            //TODO: implement
-            throw new NotImplementedException();
-        }
+            var currentNode = node;
 
+            //TODO: remodel to multiplayer in lab 7
+            while (currentNode != null)
+            {
+                currentNode.N++;
+                currentNode.Q += reward.Value;
+                currentNode = currentNode.Parent;
+            }
+        }
+        
         private MCTSNode Expand(MCTSNode parent, GOB.Action action)
         {
-            //TODO: implement
-            throw new NotImplementedException();
+            var childState = parent.State.GenerateChildWorldModel();
+            action.ApplyActionEffects(childState);
+            childState.CalculateNextPlayer();
+
+            //TODO: validate if parent is altered after function ends.
+            var childNode = new MCTSNode(childState) { Parent = parent, Action = action };
+            parent.ChildNodes.Add(childNode);
+
+            return childNode;
         }
 
         //gets the best child of a node, using the UCT formula
