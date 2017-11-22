@@ -23,7 +23,7 @@ bld/
 [Ll]og/
 [Uu]nityPackageManager/
 [Tt]emp/
-[Ll]ibrary/
+[Ll]ibrary/**/*
 [Pp]rojectSettings/
 [Aa]ssets/Character/
 [Aa]ssets/ChestFree/
