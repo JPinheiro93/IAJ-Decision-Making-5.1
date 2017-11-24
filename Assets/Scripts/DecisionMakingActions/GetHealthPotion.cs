@@ -30,7 +30,10 @@ namespace Assets.Scripts.DecisionMakingActions
 		public override void ApplyActionEffects(WorldModel worldModel)
 		{
             base.ApplyActionEffects(worldModel);
-            worldModel.SetProperty(Properties.HP, 10);
+
+            var maxHP = worldModel.GetProperty<int>(Properties.MAXHP);
+
+            worldModel.SetProperty(Properties.HP, maxHP);
             //disables the target object so that it can't be reused again
             worldModel.SetProperty(this.Target.name, false);
         }

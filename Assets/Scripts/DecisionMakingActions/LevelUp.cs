@@ -60,8 +60,7 @@ namespace Assets.Scripts.DecisionMakingActions
 
         public override void Execute()
         {
-            //TODO: uncomment LevelUp for Lab 7 onwards
-            //this.Character.GameManager.LevelUp();
+            this.Character.GameManager.LevelUp();
         }
 
         public override float GetDuration()

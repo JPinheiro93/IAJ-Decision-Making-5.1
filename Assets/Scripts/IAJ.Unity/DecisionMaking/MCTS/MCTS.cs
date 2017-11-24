@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.GameManager;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
+using Assets.Scripts.IAJ.Unity.DecisionMaking.Heuristics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,27 +14,27 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         public bool InProgress { get; set; }
         public int MaxIterations { get; set; }
         public int MaxIterationsProcessedPerFrame { get; set; }
-        public int MaxPlayoutDepthReached { get; private set; }
-        public int MaxSelectionDepthReached { get; private set; }
+        public int MaxPlayoutDepthReached { get; protected set; }
+        public int MaxSelectionDepthReached { get; protected set; }
         public float TotalProcessingTime { get; set; }
         public GOB.Action BestAction { get; set; }
         public MCTSNode BestFirstChild { get; set; }
         public List<GOB.Action> BestActionSequence { get; set; }
 
-        private int CurrentIterations { get; set; }
-        private int CurrentIterationsInFrame { get; set; }
-        private int CurrentDepth { get; set; }
+        protected int CurrentIterations { get; set; }
+        protected int CurrentIterationsInFrame { get; set; }
+        protected int CurrentDepth { get; set; }
 
-        private CurrentStateWorldModel CurrentStateWorldModel { get; set; }
-        private MCTSNode InitialNode { get; set; }
-        private System.Random RandomGenerator { get; set; }
+        protected CurrentStateWorldModel CurrentStateWorldModel { get; set; }
+        protected MCTSNode InitialNode { get; set; }
+        protected System.Random RandomGenerator { get; set; }
         
         public MCTS(CurrentStateWorldModel currentStateWorldModel)
         {
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
-            this.MaxIterations = 100;
-            this.MaxIterationsProcessedPerFrame = 10;
+            this.MaxIterations = 50000;
+            this.MaxIterationsProcessedPerFrame = 100;
             this.RandomGenerator = new System.Random();
         }
 
@@ -60,6 +61,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             MCTSNode selectedNode = this.InitialNode;
             Reward reward;
+            MCTSNode bestChild;
 
             var startTime = Time.realtimeSinceStartup;
             this.CurrentIterationsInFrame = 0;
@@ -75,15 +77,26 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 this.CurrentIterationsInFrame++;
             }
 
-            var currentNode = selectedNode;
-            while (currentNode != null && currentNode.Action != null)
+            if (this.CurrentIterationsInFrame < this.MaxIterationsProcessedPerFrame)
             {
-                this.BestActionSequence.Add(currentNode.Action);
-                currentNode = currentNode.Parent;
+                if (!this.InitialNode.State.IsTerminal())
+                {
+                    bestChild = this.BestChild(this.InitialNode);
+
+                    var currentNode = bestChild;
+                    while (currentNode != null && currentNode.Action != null)
+                    {
+                        this.BestActionSequence.Add(currentNode.Action);
+                        currentNode = currentNode.Parent;
+                    }
+
+                    this.BestAction = bestChild.Action;
+                }
+                
+                this.InProgress = false;
             }
 
-            this.BestAction = selectedNode.Action;
-
+            this.TotalProcessingTime += Time.realtimeSinceStartup - startTime;
             return this.BestAction;
         }
 
@@ -91,13 +104,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             GOB.Action nextAction;
             MCTSNode currentNode = initialNode;
-            //MCTSNode bestChild;
 
             var currentSelectionDepth = 0;
-            
-            //TODO: bestChild is for what?
-            //TODO: should we really return after expansion? Why?
-            //TODO: check where to use BestChild(), and if it is correct to use BestUCTChild here.
+        
             while (!currentNode.State.IsTerminal())
             {
                 nextAction = currentNode.State.GetNextAction();
@@ -120,7 +129,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             return currentNode;
         }
 
-        private Reward Playout(WorldModel initialPlayoutState)
+        protected virtual Reward Playout(WorldModel initialPlayoutState)
         {
             GOB.Action nextAction;
             WorldModel currentState = initialPlayoutState;
@@ -146,8 +155,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             return new Reward
             {
                 PlayerID = currentState.GetNextPlayer(),
-                //TODO: score is always 0. Either use heuristic, or add goals to MCTS and use Discontentment.
-                // NEVER USE UCT FORMULA HERE! (all zeros initially)
                 Value = currentState.GetScore()
             };
         }
@@ -155,12 +162,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         private void Backpropagate(MCTSNode node, Reward reward)
         {
             var currentNode = node;
-
-            //TODO: check if this is correct for lab 7 (+- thing)
+            
             while (currentNode != null)
             {
                 currentNode.N++;
-                currentNode.Q += (node.PlayerID == 0) ? reward.Value : -reward.Value;
+                currentNode.Q += (node.PlayerID == currentNode.PlayerID) ? reward.Value : -reward.Value;
                 currentNode = currentNode.Parent;
             }
         }
@@ -170,8 +176,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             var childState = parent.State.GenerateChildWorldModel();
             action.ApplyActionEffects(childState);
             childState.CalculateNextPlayer();
-
-            //TODO: validate if parent is altered after function ends.
+            
             var childNode = new MCTSNode(childState) { Parent = parent, Action = action };
             parent.ChildNodes.Add(childNode);
 
@@ -188,8 +193,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         //the exploration factor
         private MCTSNode BestChild(MCTSNode node)
         {
-            //TODO: implement
-            throw new NotImplementedException();
+            return node.ChildNodes.OrderBy(x => x.Q / x.N).First();
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 {
     public class DepthLimitedGOAPDecisionMaking : IDecisionMaking
     {
-        public const int MAX_DEPTH = 7; //TODO: ask prof: changing depth didn't cause any issues, just different action sequences.
+        public const int MAX_DEPTH = 3; //TODO: Include depth on report: number of combinations is too large, cannot decide in useful time.
         public int ActionCombinationsProcessedPerFrame { get; set; }
         public float TotalProcessingTime { get; set; }
         public int TotalActionCombinationsProcessed { get; set; }
@@ -44,6 +44,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             this.InitialWorldModel.Initialize();
         }
 
+        //TODO: partially solve by shuffling actions. To properly solve it, 
+        // remember previous actions, and stick to plan, unless the difference in discontentment exceeds a threshold.
         public Action ChooseAction()
         {
 			var processedActionCombinations = 0;
@@ -82,10 +84,16 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                 }
             }
 
+            if (processedActionCombinations < this.ActionCombinationsProcessedPerFrame && this.CurrentDepth < 0)
+            {
+                this.InProgress = false;
+                return this.BestAction;
+            }
+
             this.TotalProcessingTime += Time.realtimeSinceStartup - startTime;
             this.TotalActionCombinationsProcessed += processedActionCombinations;
-			this.InProgress = false;
-			return this.BestAction;
+
+            return null;
         }
     }
 }

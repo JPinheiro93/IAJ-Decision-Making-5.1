@@ -58,14 +58,18 @@ namespace Assets.Scripts.DecisionMakingActions
 		{
             base.ApplyActionEffects(worldModel);
 
-            var xpValue = worldModel.GetGoalValue(AutonomousCharacter.GAIN_XP_GOAL);
-            worldModel.SetGoalValue(AutonomousCharacter.GAIN_XP_GOAL, xpValue - this.xpChange);
+            if (!this.Target.tag.Equals("Dragon"))
+            {
+                var xpValue = worldModel.GetGoalValue(AutonomousCharacter.GAIN_XP_GOAL);
+                worldModel.SetGoalValue(AutonomousCharacter.GAIN_XP_GOAL, xpValue - this.xpChange);
 
-            var xp = (int)worldModel.GetProperty(Properties.XP);
-            worldModel.SetProperty(Properties.XP, xp + this.xpChange);
+                var xp = (int)worldModel.GetProperty(Properties.XP);
+                worldModel.SetProperty(Properties.XP, xp + this.xpChange);
 
-            //disables the target object so that it can't be reused again
-            worldModel.SetProperty(this.Target.name, false);
+                //disables the target object so that it can't be reused again
+                worldModel.SetProperty(this.Target.name, false);
+            }
+            
         }
 
     }

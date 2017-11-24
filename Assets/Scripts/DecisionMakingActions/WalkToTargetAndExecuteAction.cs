@@ -30,6 +30,7 @@ namespace Assets.Scripts.DecisionMakingActions
 
         private float GetDuration(Vector3 currentPosition)
         {
+            //TODO: include on report that we should use gateway heuristic. this one is not good for closed maps. (lab 5 report only, no need to implement)
 			var distance = (this.Target.transform.position - this.Character.Character.KinematicData.position).magnitude;
             return distance / this.Character.Character.MaxSpeed;
         }

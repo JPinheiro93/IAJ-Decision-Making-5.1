@@ -15,6 +15,7 @@ using Assets.Scripts.IAJ.Unity.Pathfinding.GoalBounding;
 using System.Linq;
 using Assets.Scripts.IAJ.Unity.DecisionMaking;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS;
+using Assets.Scripts.IAJ.Unity.DecisionMaking.Heuristics;
 
 namespace Assets.Scripts
 {
@@ -88,7 +89,6 @@ namespace Assets.Scripts
 
             //initialization of the GOB decision making
             //let's start by creating 4 main goals
-            //TODO: tune goals to properly kill the enemies and win the game.
             this.SurviveGoal = new Goal(SURVIVE_GOAL, 2.0f);
 
             this.GainXPGoal = new Goal(GAIN_XP_GOAL, 1.0f)
@@ -158,6 +158,7 @@ namespace Assets.Scripts
             // Select Decision-Making Algorithm
             //this.DecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals);
             this.DecisionMaking = new MCTS(worldModel);
+            //this.DecisionMaking = new MCTSBiasedPlayout(worldModel, new PropertyWeightedSumHeuristic());
         }
 
         void Update()
@@ -263,7 +264,6 @@ namespace Assets.Scripts
 
             this.TotalProcessingTimeText.text = "Process. Time: " + this.DecisionMaking.TotalProcessingTime.ToString("F");
 
-            //TODO: debug values removed for decision making generalization (MCTS does not have these values). Either uniform, or delete this.
             //this.BestDiscontentmentText.text = "Best Discontentment: " + this.DecisionMaking.BestDiscontentmentValue.ToString("F");
             //this.ProcessedActionsText.text = "Act. comb. processed: " + this.DecisionMaking.TotalActionCombinationsProcessed;
 
