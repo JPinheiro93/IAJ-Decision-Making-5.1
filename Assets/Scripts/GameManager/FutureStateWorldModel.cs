@@ -41,17 +41,20 @@ namespace Assets.Scripts.GameManager
         {
             var stats = this.GameManager.characterData;
 
-            if (stats.HP <= 0)
+            //Lose
+            if (stats.HP <= 0 || stats.Time >= 200) 
             {
                 return 0;
             }
+            //Win
             else if (stats.Money == 25)
             {
                 return 1.0f;
             }
+            //Score
             else
             {
-                return (stats.HP/stats.MaxHP + stats.Money/25 + stats.Time/200 + stats.Level/3) / 4;
+                return (stats.HP*2/stats.MaxHP + stats.Money/25 + stats.Time/200 + stats.Level/3) / 4;
             }
         }
 
