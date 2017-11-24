@@ -157,8 +157,8 @@ namespace Assets.Scripts
 
             // Select Decision-Making Algorithm
             //this.DecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals);
-            this.DecisionMaking = new MCTS(worldModel);
-            //this.DecisionMaking = new MCTSBiasedPlayout(worldModel, new PropertyWeightedSumHeuristic());
+            //this.DecisionMaking = new MCTS(worldModel);
+            this.DecisionMaking = new MCTSBiasedPlayout(worldModel, new PropertyWeightedSumHeuristic());
         }
 
         void Update()

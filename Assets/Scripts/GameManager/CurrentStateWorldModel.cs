@@ -57,10 +57,10 @@ namespace Assets.Scripts.GameManager
             //this method does nothing, because you should not directly set a goal value of the CurrentStateWorldModel
         }
 
-        public override void SetProperty(string propertyName, object value)
-        {
-            //this method does nothing, because you should not directly set a property of the CurrentStateWorldModel
-        }
+        //public override void SetProperty(string propertyName, object value)
+        //{
+        //    //this method does nothing, because you should not directly set a property of the CurrentStateWorldModel
+        //}
 
         public override int GetNextPlayer()
         {

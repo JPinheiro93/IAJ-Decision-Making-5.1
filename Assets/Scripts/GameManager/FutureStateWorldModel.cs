@@ -39,25 +39,19 @@ namespace Assets.Scripts.GameManager
 
         public override float GetScore()
         {
-            int money = (int)this.GetProperty(Properties.MONEY);
-            int HP = (int)this.GetProperty(Properties.HP);
-            int maxHP = (int)this.GetProperty(Properties.MAXHP);
-            float time = (float)this.GetProperty(Properties.TIME);
-            int XP = (int)this.GetProperty(Properties.XP);
-            int mana = (int)this.GetProperty(Properties.MANA);
-            int level = (int)this.GetProperty(Properties.LEVEL);
+            var stats = this.GameManager.characterData;
 
-            if (HP <= 0)
+            if (stats.HP <= 0)
             {
                 return 0;
             }
-            else if (money == 25)
+            else if (stats.Money == 25)
             {
                 return 1.0f;
             }
             else
             {
-                return maxHP + HP + money + time + XP + mana + level;
+                return (stats.HP/stats.MaxHP + stats.Money/25 + stats.Time/200 + stats.Level/3) / 4;
             }
         }
 
@@ -107,6 +101,5 @@ namespace Assets.Scripts.GameManager
             }
             else return base.GetExecutableActions();
         }
-
     }
 }

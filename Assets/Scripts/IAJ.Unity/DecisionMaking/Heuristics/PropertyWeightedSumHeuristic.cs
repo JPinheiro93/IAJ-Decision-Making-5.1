@@ -14,9 +14,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.Heuristics
             float maxTime = 200.0f;
 
             //Score
-            float money = state.GetProperty<int>(Properties.MONEY);
+            float money = -state.GetProperty<int>(Properties.MONEY);
             float HP = maxHP - state.GetProperty<int>(Properties.HP);
-            float XP = state.GetProperty<int>(Properties.XP);
+            float XP = -state.GetProperty<int>(Properties.XP);
             float mana = maxMana - state.GetProperty<int>(Properties.MANA);
             float time = state.GetProperty<float>(Properties.TIME);
 

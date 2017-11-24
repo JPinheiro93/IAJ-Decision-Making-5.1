@@ -25,7 +25,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
         {
             this.Properties = new Dictionary<string, object>();
             this.GoalValues = new Dictionary<string, float>();
-            this.Actions = parent.Actions;
+            this.Actions = parent.Actions.Where(x => x.CanExecute()).ToList(); //TODO: Optimization 1: only consider possible actions.
             this.Parent = parent;
             this.ActionEnumerator = this.Actions.GetEnumerator();
         }
@@ -66,7 +66,14 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 
         public virtual void SetProperty(string propertyName, object value)
         {
-            this.Properties[propertyName] = value;
+            if (!this.Properties.ContainsKey(propertyName))
+            {
+                this.Properties.Add(propertyName, value);
+            }
+            else
+            {
+                this.Properties[propertyName] = value;
+            }
         }
 
         public virtual float GetGoalValue(string goalName)
