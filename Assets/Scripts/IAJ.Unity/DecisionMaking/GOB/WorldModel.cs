@@ -25,7 +25,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
         {
             this.Properties = new Dictionary<string, object>();
             this.GoalValues = new Dictionary<string, float>();
-            this.Actions = parent.Actions.Where(x => x.CanExecute(parent)).ToList(); //TODO: Optimization 1: only consider possible actions.
+            this.Actions = parent.Actions.Where(x => x.CanExecute()).ToList(); //TODO: Optimization 1: only consider possible actions.
             this.Parent = parent;
             this.ActionEnumerator = this.Actions.GetEnumerator();
         }
