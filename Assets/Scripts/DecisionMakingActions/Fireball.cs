@@ -44,7 +44,7 @@ namespace Assets.Scripts.DecisionMakingActions
 
         public override bool CanExecute(WorldModel worldModel)
         {
-            return base.CanExecute() && worldModel.GetProperty<int>(Properties.MANA) >= 5;
+            return base.CanExecute() && (int)worldModel.GetProperty(Properties.MANA) >= 5;
         }
 
         public override void Execute()

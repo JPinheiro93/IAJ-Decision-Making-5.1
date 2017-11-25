@@ -54,7 +54,9 @@ namespace Assets.Scripts.GameManager
             //Score
             else
             {
-                return (stats.HP*2/stats.MaxHP + stats.Money/25 + stats.Time/200 + stats.Level/3) / 4;
+                var result = (stats.HP*2/stats.MaxHP + stats.Money/25 + (200 - stats.Time)/200 + stats.Level/3) / 5;
+
+                return result;
             }
         }
 

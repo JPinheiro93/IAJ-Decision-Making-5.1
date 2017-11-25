@@ -25,7 +25,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
         {
             this.Properties = new Dictionary<string, object>();
             this.GoalValues = new Dictionary<string, float>();
-            this.Actions = parent.Actions.Where(x => x.CanExecute()).ToList(); //TODO: Optimization 1: only consider possible actions.
+            this.Actions = parent.Actions.Where(x => x.CanExecute(parent)).ToList(); //TODO: Optimization 1: only consider possible actions.
             this.Parent = parent;
             this.ActionEnumerator = this.Actions.GetEnumerator();
         }
@@ -47,24 +47,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             }
         }
 
-        public virtual T GetProperty<T>(string propertyName)
-        {
-            //recursive implementation of WorldModel
-            if (this.Properties.ContainsKey(propertyName))
-            {
-                return (T)this.Properties[propertyName];
-            }
-            else if (this.Parent != null)
-            {
-                return this.Parent.GetProperty<T>(propertyName);
-            }
-            else
-            {
-                return default(T);
-            }
-        }
-
-        public virtual void SetProperty(string propertyName, object value)
+        public void SetProperty(string propertyName, object value)
         {
             if (!this.Properties.ContainsKey(propertyName))
             {

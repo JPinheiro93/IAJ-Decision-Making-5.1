@@ -18,7 +18,7 @@ namespace Assets.Scripts.DecisionMakingActions
 
 		public override bool CanExecute(WorldModel worldModel)
 		{
-            return base.CanExecute() && worldModel.GetProperty<int>(Properties.HP) < 10;
+            return base.CanExecute() && (int)worldModel.GetProperty(Properties.HP) < 10;
         }
 
 		public override void Execute()
@@ -31,7 +31,7 @@ namespace Assets.Scripts.DecisionMakingActions
 		{
             base.ApplyActionEffects(worldModel);
 
-            var maxHP = worldModel.GetProperty<int>(Properties.MAXHP);
+            var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
 
             worldModel.SetProperty(Properties.HP, maxHP);
             //disables the target object so that it can't be reused again

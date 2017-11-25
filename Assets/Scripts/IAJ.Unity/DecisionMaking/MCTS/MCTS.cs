@@ -33,7 +33,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
-            this.MaxIterations = 50000;
+            this.MaxIterations = 10000;
             this.MaxIterationsProcessedPerFrame = 100;
             this.RandomGenerator = new System.Random();
         }
@@ -166,7 +166,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             while (currentNode != null)
             {
                 currentNode.N++;
-                currentNode.Q += (node.PlayerID == currentNode.PlayerID) ? reward.Value : -reward.Value;
+                currentNode.Q += (this.InitialNode.PlayerID == currentNode.PlayerID) ? reward.Value : -reward.Value;
                 currentNode = currentNode.Parent;
             }
         }
@@ -177,7 +177,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             action.ApplyActionEffects(childState);
             childState.CalculateNextPlayer();
             
-            var childNode = new MCTSNode(childState) { Parent = parent, Action = action };
+            var childNode = new MCTSNode(childState) { Parent = parent, Action = action, PlayerID = childState.GetNextPlayer() };
             parent.ChildNodes.Add(childNode);
 
             return childNode;
@@ -186,14 +186,14 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         //gets the best child of a node, using the UCT formula
         private MCTSNode BestUCTChild(MCTSNode node)
         {
-            return node.ChildNodes.OrderBy(x => (x.Q / x.N) + ExplorationFactor * Math.Sqrt(Math.Log(node.N) / x.N)).First();
+            return node.ChildNodes.OrderByDescending(x => (x.Q / x.N) + ExplorationFactor * Math.Sqrt(Math.Log(node.N) / x.N)).First();
         }
 
         //this method is very similar to the bestUCTChild, but it is used to return the final action of the MCTS search, and so we do not care about
         //the exploration factor
         private MCTSNode BestChild(MCTSNode node)
         {
-            return node.ChildNodes.OrderBy(x => x.Q / x.N).First();
+            return node.ChildNodes.OrderByDescending(x => x.Q / x.N).First();
         }
     }
 }

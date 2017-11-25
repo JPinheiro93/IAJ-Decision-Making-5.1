@@ -59,17 +59,20 @@ namespace Assets.Scripts.DecisionMakingActions
             var xpValue = worldModel.GetGoalValue(AutonomousCharacter.GAIN_XP_GOAL);
             worldModel.SetGoalValue(AutonomousCharacter.GAIN_XP_GOAL,xpValue-this.xpChange); 
 
-            var surviveValue = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
-            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL,surviveValue-this.hpChange);
-
             var hp = (int)worldModel.GetProperty(Properties.HP);
             worldModel.SetProperty(Properties.HP,hp + this.hpChange);
-            var xp = (int)worldModel.GetProperty(Properties.XP);
-            worldModel.SetProperty(Properties.XP, xp + this.xpChange);
-           
 
-            //disables the target object so that it can't be reused again
-            worldModel.SetProperty(this.Target.name,false);
+            if ((int)worldModel.GetProperty(Properties.HP) > 0)
+            {
+                var xp = (int)worldModel.GetProperty(Properties.XP);
+                worldModel.SetProperty(Properties.XP, xp + this.xpChange);
+
+                var surviveValue = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
+                worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, surviveValue - this.hpChange);
+
+                //disables the target object so that it can't be reused again
+                worldModel.SetProperty(this.Target.name, false);
+            }
         }
 
     }

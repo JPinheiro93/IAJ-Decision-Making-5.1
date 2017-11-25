@@ -26,10 +26,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
             while (!currentState.IsTerminal())
             {
-                var executableActions = currentState.GetExecutableActions().OrderBy(x => this.Heuristic.H(currentState, x)).ToList();
+                var executableActions = currentState.GetExecutableActions().OrderByDescending(x => this.Heuristic.H(currentState, x)).ToList();
                 
-                //Bias: Choose among the 25% best
-                var index = this.RandomGenerator.Next(0, executableActions.Count / 4);
+                //Bias: Choose among the 50% best
+                var index = this.RandomGenerator.Next(0, Convert.ToInt32(Math.Ceiling(executableActions.Count / 2.0)));
                 nextAction = executableActions[index];
 
                 currentState = currentState.GenerateChildWorldModel();

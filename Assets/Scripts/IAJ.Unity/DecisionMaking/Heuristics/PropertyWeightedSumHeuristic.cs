@@ -9,16 +9,16 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.Heuristics
         public float H(WorldModel state)
         {
             //Max Possible scores
-            int maxHP = state.GetProperty<int>(Properties.MAXHP);
+            int maxHP = (int)state.GetProperty(Properties.MAXHP);
             int maxMana = 10;
             float maxTime = 200.0f;
 
             //Score
-            float money = -state.GetProperty<int>(Properties.MONEY);
-            float HP = maxHP - state.GetProperty<int>(Properties.HP);
-            float XP = -state.GetProperty<int>(Properties.XP);
-            float mana = maxMana - state.GetProperty<int>(Properties.MANA);
-            float time = state.GetProperty<float>(Properties.TIME);
+            float money = -(int)state.GetProperty(Properties.MONEY);
+            float HP = maxHP - (int)state.GetProperty(Properties.HP);
+            float XP = -(int)state.GetProperty(Properties.XP);
+            float mana = maxMana - (int)state.GetProperty(Properties.MANA);
+            float time = (float)state.GetProperty(Properties.TIME);
 
             return (HP / maxHP + time / maxTime + money) / 3 * (XP + mana);
         }

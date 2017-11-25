@@ -117,7 +117,10 @@ namespace Assets.Scripts
 
             //initialize the available actions
 
-            this.Actions = new List<Action>();
+            this.Actions = new List<Action>
+            {
+                new LevelUp(this)
+            };
 
 
             foreach (var chest in GameObject.FindGameObjectsWithTag("Chest"))
