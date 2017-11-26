@@ -150,10 +150,14 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 this.MaxPlayoutDepthReached = currentPlayoutDepth;
             }
 
+            var currentPlayer = currentState.GetNextPlayer();
+            var score = currentState.GetScore();
+            //var value = initialPlayoutState.GetNextPlayer() == currentPlayer ? score : -score;
+
             return new Reward
             {
-                PlayerID = currentState.GetNextPlayer(),
-                Value = currentState.GetScore()
+                PlayerID = currentPlayer,
+                Value = score
             };
         }
 
