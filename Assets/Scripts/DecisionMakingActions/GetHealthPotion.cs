@@ -13,12 +13,12 @@ namespace Assets.Scripts.DecisionMakingActions
 
 		public override bool CanExecute()
 		{
-            return base.CanExecute() && this.Character.GameManager.characterData.HP < 10;
+            return base.CanExecute() && this.Character.GameManager.characterData.HP < this.Character.GameManager.characterData.MaxHP;
         }
 
 		public override bool CanExecute(WorldModel worldModel)
 		{
-            return base.CanExecute() && (int)worldModel.GetProperty(Properties.HP) < 10;
+            return base.CanExecute() && (int)worldModel.GetProperty(Properties.HP) < (int)worldModel.GetProperty(Properties.MAXHP);
         }
 
 		public override void Execute()

@@ -38,7 +38,7 @@ namespace Assets.Scripts.GameManager
             float time = (float)this.GetProperty(Properties.TIME);
             int money = (int)this.GetProperty(Properties.MONEY);
 
-            return HP <= 0 ||  time >= 200 || money == 25;
+            return HP <= 0 ||  time >= 200 || money >= 25;
         }
 
         public override float GetScore()
@@ -46,32 +46,20 @@ namespace Assets.Scripts.GameManager
             int money = (int)this.GetProperty(Properties.MONEY);
             float timeLeft = 200 - (float)this.GetProperty(Properties.TIME);
             int hp = (int)this.GetProperty(Properties.HP);
-            int xp = (int)this.GetProperty(Properties.XP);
-            int level = (int)this.GetProperty(Properties.LEVEL);
 
             //Lose
             if (hp <= 0 || timeLeft <= 0) 
             {
-                return 0;
+                return 0f;
             }
             //Win
-            else if (money == 25)
+            else if (money >= 25)
             {
-                return 1.0f + (timeLeft / 200); //Bonus points for finishing first.
+                return 1.0f * (timeLeft / 200); //Bonus points for finishing first.
             }
-            //Score
-            else
-            {
-                var result = ((timeLeft / 200) + (level * 4 / 3) + (money * 15/ 25)) / 20;
-
-                //For testing purposes. Score should never be > 1, unless you win.
-                if (result > 1)
-                {
-                    throw new System.Exception();
-                }
-
-                return result;
-            }
+            
+            //Score called on a non-terminal state.
+            throw new System.Exception();
         }
 
         public override int GetNextPlayer()

@@ -15,6 +15,7 @@ namespace Assets.Scripts.DecisionMakingActions
         {
             this.Character = character;
             this.Target = target;
+            //TODO: Load gateways and hypergraph.
         }
 
         public override float GetDuration()
@@ -60,7 +61,6 @@ namespace Assets.Scripts.DecisionMakingActions
         {
             this.Character.StartPathfinding(this.Target.transform.position);
         }
-
 
         public override void ApplyActionEffects(WorldModel worldModel)
         {

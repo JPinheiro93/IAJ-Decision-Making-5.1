@@ -11,7 +11,6 @@ namespace Assets.Scripts.GameManager
         protected const int PropertiesArraySize = 25;
         protected object[] PropertiesArray { get; set; }
         private List<Action> Actions { get; set; }
-        private List<Action> ExcecutableActions { get; set; }
         protected IEnumerator<Action> ActionEnumerator { get; set; } 
 
         //TODO: GoalValues took off because of MCTS. Add them back for DLGOAP.

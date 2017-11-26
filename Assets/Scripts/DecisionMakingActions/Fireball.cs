@@ -21,7 +21,6 @@ namespace Assets.Scripts.DecisionMakingActions
             }
             else if (target.tag.Equals("Dragon"))
             {
-                this.xpChange = 15;
             }
         }
 

@@ -4,6 +4,7 @@ using Assets.Scripts.IAJ.Unity.DecisionMaking.Heuristics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
@@ -21,6 +22,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         public MCTSNode BestFirstChild { get; set; }
         public List<GOB.Action> BestActionSequence { get; set; }
 
+        //TODO: Optimization1 trial1: RAVE. FAILED, because, in this game, action execution order matters. 
+        //protected List<ActionRAVE> ActionRAVEs { get; set; }
+
         protected int CurrentIterations { get; set; }
         protected int CurrentIterationsInFrame { get; set; }
         protected int CurrentDepth { get; set; }
@@ -33,8 +37,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
-            this.MaxIterations = 5000;
-            this.MaxIterationsProcessedPerFrame = 600;
+            this.MaxIterations = 2000;
+            this.MaxIterationsProcessedPerFrame = 50;
             this.RandomGenerator = new System.Random();
         }
 
@@ -55,6 +59,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             this.InProgress = true;
             this.BestFirstChild = null;
             this.BestActionSequence = new List<GOB.Action>();
+            //this.ActionRAVEs = new List<ActionRAVE>();
         }
 
         public GOB.Action ChooseAction()
@@ -129,11 +134,32 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             return currentNode;
         }
 
-        protected virtual Reward Playout(WorldModel initialPlayoutState)
+        private Reward Playout(WorldModel initialPlayoutState)
+        {
+            //TODO: Optimization 1 trial2: playout paralelization, wiht several playouts at once. Overall result is good, we need less iterations for same results.
+            int threadPoolSize = 10;
+            var scores = new float[threadPoolSize]; //
+
+            for (int i = 0; i < threadPoolSize; i++)
+            {
+                System.Action job = () =>
+                {
+                    scores[i] = RunPlayout(initialPlayoutState);
+                };
+
+                job();
+            }
+
+            return new Reward
+            {
+                PlayerID = initialPlayoutState.GetNextPlayer(),
+                Value = scores.Sum() / 10
+            };
+        }
+
+        protected virtual float RunPlayout(WorldModel currentState)
         {
             GOB.Action nextAction;
-            WorldModel currentState = initialPlayoutState;
-
             var currentPlayoutDepth = 0;
 
             while (!currentState.IsTerminal())
@@ -150,15 +176,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 this.MaxPlayoutDepthReached = currentPlayoutDepth;
             }
 
-            var currentPlayer = currentState.GetNextPlayer();
-            var score = currentState.GetScore();
             //var value = initialPlayoutState.GetNextPlayer() == currentPlayer ? score : -score;
 
-            return new Reward
-            {
-                PlayerID = currentPlayer,
-                Value = score
-            };
+            return currentState.GetScore();
         }
 
         private void Backpropagate(MCTSNode node, Reward reward)
@@ -168,8 +188,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             while (currentNode != null)
             {
                 currentNode.N++;
-                currentNode.Q += (this.InitialNode.PlayerID == node.PlayerID) ? reward.Value : -reward.Value;
-                currentNode = currentNode.Parent;
+                currentNode.Q += /*(this.InitialNode.PlayerID == node.PlayerID) ? */reward.Value /*: -reward.Value*/;
+
+                //this.UpdateRAVE(currentNode.Action, reward.Value);
+
+                currentNode = currentNode.Parent;  
             }
         }
         
@@ -185,14 +208,37 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         //gets the best child of a node, using the UCT formula
         private MCTSNode BestUCTChild(MCTSNode node)
         {
-            return node.ChildNodes.OrderByDescending(x => (x.Q / x.N) + ExplorationFactor * Math.Sqrt(Math.Log(node.N) / x.N)).First();
+            return node.ChildNodes.OrderByDescending(x => Quality(x) + ExplorationFactor * Math.Sqrt(Math.Log(node.N) / x.N)).First();
         }
 
         //this method is very similar to the bestUCTChild, but it is used to return the final action of the MCTS search, and so we do not care about
         //the exploration factor
         private MCTSNode BestChild(MCTSNode node)
         {
-            return node.ChildNodes.OrderByDescending(x => x.Q / x.N).First();
+            return node.ChildNodes.OrderByDescending(x => Quality(x)).First();
         }
+
+        private float Quality(MCTSNode node)
+        {
+            //var actionRAVE = this.ActionRAVEs.Single(x => x.action == node.Action);
+            //var beta = Beta(actionRAVE.Plays, node.N);
+            return node.Q / node.N;//((1 - beta) * (node.Q / node.N) + beta * (actionRAVE.Q / actionRAVE.Plays));
+        }
+
+        private float Beta(int playoutsWithAction, int totalPlayouts)
+        {
+            var n = 1;
+            return playoutsWithAction / (playoutsWithAction + totalPlayouts + 4 * (n ^ 2) * playoutsWithAction * totalPlayouts);
+        }
+
+        //private void UpdateRAVE(GOB.Action action, float reward)
+        //{
+        //    if (!this.ActionRAVEs.Any(x => x.action == action))
+        //    {
+        //        this.ActionRAVEs.Add(new ActionRAVE(action));
+        //    }
+
+        //    this.ActionRAVEs.Single(x => x.action == action).Update(reward);
+        //}
     }
 }

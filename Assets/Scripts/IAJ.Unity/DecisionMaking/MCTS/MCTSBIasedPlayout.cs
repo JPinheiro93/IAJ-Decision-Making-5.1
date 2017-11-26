@@ -18,7 +18,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             this.Heuristic = heuristic;
         }
 
-        protected override Reward Playout(WorldModel initialPlayoutState)
+        protected override float RunPlayout(WorldModel initialPlayoutState)
         {
             GOB.Action nextAction;
             WorldModel currentState = initialPlayoutState;
@@ -43,15 +43,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 this.MaxPlayoutDepthReached = currentPlayoutDepth;
             }
 
-            var currentPlayer = currentState.GetNextPlayer();
-            var score = currentState.GetScore();
+            //var currentPlayer = currentState.GetNextPlayer();
             //var value = initialPlayoutState.GetNextPlayer() == currentPlayer ? score : -score;
 
-            return new Reward
-            {
-                PlayerID = currentPlayer,
-                Value = score
-            };
+            return currentState.GetScore();
         }
     }
 }

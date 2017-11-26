@@ -43,8 +43,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             this.BestDiscontentmentValue = float.MaxValue;
         }
 
-        //TODO: partially solve by shuffling actions. To properly solve it, 
-        // remember previous actions, and stick to plan, unless the difference in discontentment exceeds a threshold.
+        //TODO: partially solve by shuffling actions. To properly solve it, remember previous actions, and stick to plan, unless the difference in discontentment exceeds a threshold.
         public Action ChooseAction()
         {
 			var processedActionCombinations = 0;

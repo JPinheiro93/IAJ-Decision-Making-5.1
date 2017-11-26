@@ -9,22 +9,22 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.Heuristics
         public float H(WorldModel state)
         {
             int money = (int)state.GetProperty(Properties.MONEY);
-            float time = (float)state.GetProperty(Properties.TIME);
+            float timeLeft = 200 - (float)state.GetProperty(Properties.TIME);
             int hp = (int)state.GetProperty(Properties.HP);
             int level = (int)state.GetProperty(Properties.LEVEL);
 
             //Lose
-            if (hp <= 0 || time >= 200)
+            if (hp <= 0 || timeLeft <= 0)
             {
                 return 0;
             }
             //Win
-            else if (money == 25)
+            else if (money >= 25)
             {
-                return 1.0f;
+                return 1.0f + (timeLeft / 200);
             }
             //Score
-            var result = (money * 6 / 25 + (200 - time) / 200 + level * 3 / 3) / 10;
+            var result = ((money + 1) * (9/10) + level * (1/10)) * (timeLeft / 200);
 
             return result;
         }
