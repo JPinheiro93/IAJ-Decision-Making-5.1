@@ -13,13 +13,11 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile>
-    </CompilerResponseFile>
+    <CompilerResponseFile></CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>2017.2.0f3</UnityVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -257,10 +255,10 @@
     <Compile Include="Assets\Scripts\GameManager\FutureStateWorldModel.cs" />
     <Compile Include="Assets\Scripts\GameManager\GameManager.cs" />
     <Compile Include="Assets\Scripts\GameManager\Properties.cs" />
+    <Compile Include="Assets\Scripts\GameManager\WorldModel.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\GOB\Action.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\GOB\DepthLimitedGOAPDecisionMaking.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\GOB\Goal.cs" />
-    <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\GOB\WorldModel.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\Heuristics\IHeuristic.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\Heuristics\PropertyWeightedSumHeuristic.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\Heuristics\ZeroHeuristic.cs" />

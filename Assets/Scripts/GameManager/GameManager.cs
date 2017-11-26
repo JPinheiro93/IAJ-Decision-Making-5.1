@@ -24,10 +24,8 @@ namespace Assets.Scripts.GameManager
 
         //private fields
         public List<GameObject> chests;
-        public List<GameObject> skeletons;
-        public List<GameObject> orcs;
-        public List<GameObject> dragons;
         public List<GameObject> enemies;
+        public List<GameObject> potions;
 
         public CharacterData characterData;
         public bool WorldChanged { get; set; }
@@ -45,13 +43,21 @@ namespace Assets.Scripts.GameManager
 
             this.enemies = new List<GameObject>();
             this.chests = GameObject.FindGameObjectsWithTag("Chest").ToList();
-            this.skeletons = GameObject.FindGameObjectsWithTag("Skeleton").ToList();
-            this.enemies.AddRange(this.skeletons);
-            this.orcs = GameObject.FindGameObjectsWithTag("Orc").ToList();
-            this.enemies.AddRange(this.orcs);
-            this.dragons = GameObject.FindGameObjectsWithTag("Dragon").ToList();
-            this.enemies.AddRange(this.dragons);
-            
+
+            var skeletons = GameObject.FindGameObjectsWithTag("Skeleton").ToList();
+            this.enemies.AddRange(skeletons);
+
+            var orcs = GameObject.FindGameObjectsWithTag("Orc").ToList();
+            this.enemies.AddRange(orcs);
+
+            var dragons = GameObject.FindGameObjectsWithTag("Dragon").ToList();
+            this.enemies.AddRange(dragons);
+
+            var healthPotions = GameObject.FindGameObjectsWithTag("HealthPotion").ToList();
+            this.potions.AddRange(healthPotions);
+
+            var manaPotions = GameObject.FindGameObjectsWithTag("ManaPotion").ToList();
+            this.potions.AddRange(manaPotions);
         }
 
         public void Update()
@@ -204,6 +210,7 @@ namespace Assets.Scripts.GameManager
         {
             if (manaPotion != null && manaPotion.activeSelf && InPotionRange(manaPotion))
             {
+                this.potions.Remove(manaPotion);
                 GameObject.DestroyObject(manaPotion);
                 this.characterData.Mana = 10;
                 this.WorldChanged = true;
@@ -214,19 +221,18 @@ namespace Assets.Scripts.GameManager
         {
             if (potion != null && potion.activeSelf && InPotionRange(potion))
             {
+                this.potions.Remove(potion);
                 GameObject.DestroyObject(potion);
                 this.characterData.HP = this.characterData.MaxHP;
                 this.WorldChanged = true;
             }
         }
 
-
         private bool CheckRange(GameObject obj, float maximumSqrDistance)
         {
             return (obj.transform.position - this.characterData.CharacterGameObject.transform.position).sqrMagnitude <= maximumSqrDistance;
         }
-
-
+        
         public bool InMeleeRange(GameObject enemy)
         {
             return this.CheckRange(enemy, 16.0f);

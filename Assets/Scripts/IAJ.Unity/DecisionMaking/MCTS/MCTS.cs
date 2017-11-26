@@ -33,8 +33,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
-            this.MaxIterations = 5000;
-            this.MaxIterationsProcessedPerFrame = 100;
+            this.MaxIterations = 3000;
+            this.MaxIterationsProcessedPerFrame = 600;
             this.RandomGenerator = new System.Random();
         }
 
@@ -133,17 +133,15 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             GOB.Action nextAction;
             WorldModel currentState = initialPlayoutState;
+
             var currentPlayoutDepth = 0;
 
             while (!currentState.IsTerminal())
             {
                 var executableActions = currentState.GetExecutableActions();
-                nextAction = executableActions[this.RandomGenerator.Next(0, executableActions.Length)];
+                nextAction = executableActions[this.RandomGenerator.Next(0, executableActions.Count)];
 
-                currentState = currentState.GenerateChildWorldModel();
-                nextAction.ApplyActionEffects(currentState);
-                currentState.CalculateNextPlayer();
-
+                currentState = currentState.GenerateChildWorldModel(nextAction);
                 currentPlayoutDepth++;
             }
 
@@ -166,17 +164,14 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             while (currentNode != null)
             {
                 currentNode.N++;
-                currentNode.Q += (this.InitialNode.PlayerID == currentNode.PlayerID) ? reward.Value : -reward.Value;
+                currentNode.Q += (this.InitialNode.PlayerID == node.PlayerID) ? reward.Value : -reward.Value;
                 currentNode = currentNode.Parent;
             }
         }
         
         private MCTSNode Expand(MCTSNode parent, GOB.Action action)
         {
-            var childState = parent.State.GenerateChildWorldModel();
-            action.ApplyActionEffects(childState);
-            childState.CalculateNextPlayer();
-            
+            var childState = parent.State.GenerateChildWorldModel(action);            
             var childNode = new MCTSNode(childState) { Parent = parent, Action = action, PlayerID = childState.GetNextPlayer() };
             parent.ChildNodes.Add(childNode);
 

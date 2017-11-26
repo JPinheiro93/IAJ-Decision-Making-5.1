@@ -10,7 +10,7 @@ namespace Assets.Scripts.GameManager
         protected GameManager GameManager { get; set; }
         protected int NextPlayer { get; set; }
         protected Action NextEnemyAction { get; set; }
-        protected Action[] NextEnemyActions { get; set; }
+        protected List<Action> NextEnemyActions { get; set; }
 
         public FutureStateWorldModel(GameManager gameManager, List<Action> actions) : base(actions)
         {
@@ -23,9 +23,13 @@ namespace Assets.Scripts.GameManager
             this.GameManager = parent.GameManager;
         }
 
-        public override WorldModel GenerateChildWorldModel()
+        public override WorldModel GenerateChildWorldModel(Action action)
         {
-            return new FutureStateWorldModel(this);
+            var newState = new FutureStateWorldModel(this);
+            action.ApplyActionEffects(newState);
+            newState.CalculateNextPlayer();
+
+            return newState;
         }
 
         public override bool IsTerminal()
@@ -49,12 +53,18 @@ namespace Assets.Scripts.GameManager
             //Win
             else if (stats.Money == 25)
             {
-                return 1.0f;
+                return 1.0f + (200 - stats.Time) / 200; //Bonus points for finishing first.
             }
             //Score
             else
             {
-                var result = (stats.HP*2/stats.MaxHP + stats.Money*4/25 + (200 - stats.Time)*3/200 + stats.Level/3) / 10;
+                var result = (stats.XP / 50 + (200 - stats.Time) / 200) * stats.Level * (stats.Money + 1) / (2 * 3 * 26);
+
+                //For testing purposes. Score should never be > 1, unless you win.
+                if (result > 1)
+                {
+                    throw new System.Exception();
+                }
 
                 return result;
             }
@@ -78,7 +88,7 @@ namespace Assets.Scripts.GameManager
                 {
                     this.NextPlayer = 1;
                     this.NextEnemyAction = new SwordAttack(this.GameManager.autonomousCharacter, enemy);
-                    this.NextEnemyActions = new Action[] { this.NextEnemyAction };
+                    this.NextEnemyActions = new List<Action> { this.NextEnemyAction };
                     return; 
                 }
             }
@@ -98,7 +108,7 @@ namespace Assets.Scripts.GameManager
             else return base.GetNextAction();
         }
 
-        public override Action[] GetExecutableActions()
+        public override List<Action> GetExecutableActions()
         {
             if (this.NextPlayer == 1)
             {

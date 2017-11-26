@@ -41,7 +41,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             this.BestActionSequence = new List<GOB.Action>(MAX_DEPTH);
             this.BestAction = null;
             this.BestDiscontentmentValue = float.MaxValue;
-            this.InitialWorldModel.Initialize();
         }
 
         //TODO: partially solve by shuffling actions. To properly solve it, 
@@ -72,9 +71,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 
                     if (nextAction != null)
                     {
-                        this.Models[this.CurrentDepth + 1] = this.Models[this.CurrentDepth].GenerateChildWorldModel();
-                        nextAction.ApplyActionEffects(this.Models[this.CurrentDepth + 1]);
-                        this.Models[this.CurrentDepth + 1].CalculateNextPlayer();
+                        this.Models[this.CurrentDepth + 1] = this.Models[this.CurrentDepth].GenerateChildWorldModel(nextAction);
                         this.CurrentDepth++;
                     }
                     else

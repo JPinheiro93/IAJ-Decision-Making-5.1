@@ -8,28 +8,30 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.Heuristics
     {
         public float H(WorldModel state)
         {
-            //Max Possible scores
-            int maxHP = (int)state.GetProperty(Properties.MAXHP);
-            int maxMana = 10;
-            float maxTime = 200.0f;
-
-            //Score
-            float money = -(int)state.GetProperty(Properties.MONEY);
-            float HP = maxHP - (int)state.GetProperty(Properties.HP);
-            float XP = -(int)state.GetProperty(Properties.XP);
-            float mana = maxMana - (int)state.GetProperty(Properties.MANA);
+            int money = (int)state.GetProperty(Properties.MONEY);
             float time = (float)state.GetProperty(Properties.TIME);
+            int hp = (int)state.GetProperty(Properties.HP);
+            int level = (int)state.GetProperty(Properties.LEVEL);
 
-            return (HP / maxHP + time / maxTime + money) / 3 * (XP + mana);
+            //Lose
+            if (hp <= 0 || time >= 200)
+            {
+                return 0;
+            }
+            //Win
+            else if (money == 25)
+            {
+                return 1.0f;
+            }
+            //Score
+            var result = (money * 6 / 25 + (200 - time) / 200 + level * 3 / 3) / 10;
+
+            return result;
         }
 
         public float H(WorldModel state, Action action)
         {
-            var childState = state.GenerateChildWorldModel();
-            action.ApplyActionEffects(childState);
-            childState.CalculateNextPlayer();
-
-            return H(childState);
+            return H(state.GenerateChildWorldModel(action));
         }
     }
 }

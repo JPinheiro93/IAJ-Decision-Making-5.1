@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
+﻿using Assets.Scripts.GameManager;
+using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
 using RAIN.Navigation.Graph;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.Heuristics
@@ -12,11 +13,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.Heuristics
 
         public float H(WorldModel state, Action action)
         {
-            var childState = state.GenerateChildWorldModel();
-            action.ApplyActionEffects(childState);
-            childState.CalculateNextPlayer();
-
-            return H(childState);
+            return H(state.GenerateChildWorldModel(action));
         }
     }
 }

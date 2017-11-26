@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
+﻿using Assets.Scripts.GameManager;
 using System.Collections.Generic;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS

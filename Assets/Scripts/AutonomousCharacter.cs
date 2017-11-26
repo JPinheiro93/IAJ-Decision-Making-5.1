@@ -45,6 +45,7 @@ namespace Assets.Scripts
         public Goal SurviveGoal { get; private set; }
         public Goal GetRichGoal { get; private set; }
         public Goal GainXPGoal { get; private set; }
+        public CurrentStateWorldModel initialState { get; set; }
         public List<Goal> Goals { get; set; }
         public List<Action> Actions { get; set; }
         public Action CurrentAction { get; private set; }
@@ -156,12 +157,12 @@ namespace Assets.Scripts
                 this.Actions.Add(new Fireball(this, enemy));
             }
 
-            var worldModel = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
+            this.initialState = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
 
             // Select Decision-Making Algorithm
             //this.DecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals);
             //this.DecisionMaking = new MCTS(worldModel);
-            this.DecisionMaking = new MCTSBiasedPlayout(worldModel, new PropertyWeightedSumHeuristic());
+            this.DecisionMaking = new MCTSBiasedPlayout(this.initialState, new PropertyWeightedSumHeuristic());
         }
 
         void Update()
@@ -207,6 +208,8 @@ namespace Assets.Scripts
 
                 //initialize Decision Making Proccess
                 this.CurrentAction = null;
+
+                this.initialState.Update(this.GameManager);
                 this.DecisionMaking.InitializeDecisionMaking();
             }
 

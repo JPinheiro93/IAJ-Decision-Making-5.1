@@ -27,14 +27,13 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             while (!currentState.IsTerminal())
             {
                 var executableActions = currentState.GetExecutableActions().OrderByDescending(x => this.Heuristic.H(currentState, x)).ToList();
-                
-                //Bias: Choose among the 50% best
-                var index = this.RandomGenerator.Next(0, Convert.ToInt32(Math.Ceiling(executableActions.Count / 2.0)));
+
+                //Bias: Choose among the 30% best
+                var maxIndex = Convert.ToInt32(Math.Ceiling(executableActions.Count * 0.3));
+                var index = this.RandomGenerator.Next(0, maxIndex);
                 nextAction = executableActions[index];
 
-                currentState = currentState.GenerateChildWorldModel();
-                nextAction.ApplyActionEffects(currentState);
-                currentState.CalculateNextPlayer();
+                currentState = currentState.GenerateChildWorldModel(nextAction);
 
                 currentPlayoutDepth++;
             }

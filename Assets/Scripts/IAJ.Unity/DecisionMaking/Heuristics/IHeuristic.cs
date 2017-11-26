@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
+﻿using Assets.Scripts.GameManager;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.Heuristics
 {
