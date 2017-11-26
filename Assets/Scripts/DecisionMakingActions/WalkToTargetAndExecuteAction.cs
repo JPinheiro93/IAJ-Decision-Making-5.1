@@ -5,6 +5,7 @@ using Action = Assets.Scripts.IAJ.Unity.DecisionMaking.GOB.Action;
 
 namespace Assets.Scripts.DecisionMakingActions
 {
+    //TODO: Optimization2: Use gateway Heuristic to measure distance.
     public abstract class WalkToTargetAndExecuteAction : Action
     {
         protected AutonomousCharacter Character { get; set; }
