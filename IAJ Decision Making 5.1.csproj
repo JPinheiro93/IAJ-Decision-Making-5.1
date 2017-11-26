@@ -264,7 +264,7 @@
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\Heuristics\ZeroHeuristic.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\IDecisionMaking.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\MCTS\MCTS.cs" />
-    <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\MCTS\MCTSBiasedPlayout.cs" />
+    <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\MCTS\MCTSBIasedPlayout.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\MCTS\MCTSNode.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\DecisionMaking\MCTS\Reward.cs" />
     <Compile Include="Assets\Scripts\IAJ.Unity\Movement\DynamicMovement\DynamicArrive.cs" />

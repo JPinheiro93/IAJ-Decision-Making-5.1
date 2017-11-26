@@ -33,7 +33,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
-            this.MaxIterations = 3000;
+            this.MaxIterations = 5000;
             this.MaxIterationsProcessedPerFrame = 600;
             this.RandomGenerator = new System.Random();
         }

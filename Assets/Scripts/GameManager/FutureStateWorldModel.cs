@@ -43,22 +43,26 @@ namespace Assets.Scripts.GameManager
 
         public override float GetScore()
         {
-            var stats = this.GameManager.characterData;
+            int money = (int)this.GetProperty(Properties.MONEY);
+            float timeLeft = 200 - (float)this.GetProperty(Properties.TIME);
+            int hp = (int)this.GetProperty(Properties.HP);
+            int xp = (int)this.GetProperty(Properties.XP);
+            int level = (int)this.GetProperty(Properties.LEVEL);
 
             //Lose
-            if (stats.HP <= 0 || stats.Time >= 200) 
+            if (hp <= 0 || timeLeft <= 0) 
             {
                 return 0;
             }
             //Win
-            else if (stats.Money == 25)
+            else if (money == 25)
             {
-                return 1.0f + (200 - stats.Time) / 200; //Bonus points for finishing first.
+                return 1.0f + (timeLeft / 200); //Bonus points for finishing first.
             }
             //Score
             else
             {
-                var result = (stats.XP / 50 + (200 - stats.Time) / 200) * stats.Level * (stats.Money + 1) / (2 * 3 * 26);
+                var result = ((timeLeft / 200) + (level * 4 / 3) + (money * 15/ 25)) / 20;
 
                 //For testing purposes. Score should never be > 1, unless you win.
                 if (result > 1)

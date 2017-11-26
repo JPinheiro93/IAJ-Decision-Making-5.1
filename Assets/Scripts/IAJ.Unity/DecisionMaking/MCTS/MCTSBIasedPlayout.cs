@@ -28,8 +28,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             {
                 var executableActions = currentState.GetExecutableActions().OrderByDescending(x => this.Heuristic.H(currentState, x)).ToList();
 
-                //Bias: Choose among the 30% best
-                var maxIndex = Convert.ToInt32(Math.Ceiling(executableActions.Count * 0.3));
+                //Bias: Choose among the 50% best
+                var maxIndex = Convert.ToInt32(Math.Ceiling(executableActions.Count * 0.5));
                 var index = this.RandomGenerator.Next(0, maxIndex);
                 nextAction = executableActions[index];
 
