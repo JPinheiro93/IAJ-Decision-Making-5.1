@@ -26,10 +26,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
             while (!currentState.IsTerminal())
             {
-                var executableActions = currentState.GetExecutableActions().OrderByDescending(x => this.Heuristic.H(currentState, x)).ToList();
+                var executableActions = currentState.GetExecutableActions();
 
                 //Bias: Choose among the 50% best
                 var maxIndex = Convert.ToInt32(Math.Ceiling(executableActions.Count * 0.5));
+                var orderedExecutableActions = executableActions.OrderByDescending(x => this.Heuristic.H(currentState, x)).Take(maxIndex).ToList();
+
                 var index = this.RandomGenerator.Next(0, maxIndex);
                 nextAction = executableActions[index];
 

@@ -45,24 +45,24 @@ namespace Assets.Scripts.GameManager
             this.PropertiesArray[7] = gameManager.characterData.CharacterGameObject.transform.position;
                                       
             //Potions                 
-            this.PropertiesArray[10] =gameManager.potions.Any(x => x.name == Properties.HEALTHPOTION1);
-            this.PropertiesArray[11] =gameManager.potions.Any(x => x.name == Properties.HEALTHPOTION2);
-            this.PropertiesArray[12] =gameManager.potions.Any(x => x.name == Properties.MANAPOTION1);
-            this.PropertiesArray[13] =gameManager.potions.Any(x => x.name == Properties.MANAPOTION2);
+            this.PropertiesArray[10] = gameManager.potions.Any(x => x.name == Properties.HEALTHPOTION1);
+            this.PropertiesArray[11] = gameManager.potions.Any(x => x.name == Properties.HEALTHPOTION2);
+            this.PropertiesArray[12] = gameManager.potions.Any(x => x.name == Properties.MANAPOTION1);
+            this.PropertiesArray[13] = gameManager.potions.Any(x => x.name == Properties.MANAPOTION2);
                                       
             //Chests                  
-            this.PropertiesArray[15] =gameManager.chests.Any(x => x.name == Properties.CHEST1);
-            this.PropertiesArray[16] =gameManager.chests.Any(x => x.name == Properties.CHEST2);
-            this.PropertiesArray[17] =gameManager.chests.Any(x => x.name == Properties.CHEST3);
-            this.PropertiesArray[18] =gameManager.chests.Any(x => x.name == Properties.CHEST4);
-            this.PropertiesArray[19] =gameManager.chests.Any(x => x.name == Properties.CHEST5);
+            this.PropertiesArray[15] = gameManager.chests.Any(x => x.name == Properties.CHEST1);
+            this.PropertiesArray[16] = gameManager.chests.Any(x => x.name == Properties.CHEST2);
+            this.PropertiesArray[17] = gameManager.chests.Any(x => x.name == Properties.CHEST3);
+            this.PropertiesArray[18] = gameManager.chests.Any(x => x.name == Properties.CHEST4);
+            this.PropertiesArray[19] = gameManager.chests.Any(x => x.name == Properties.CHEST5);
                                       
             //Enemies                 
-            this.PropertiesArray[20] =gameManager.enemies.Any(x => x.name == Properties.SKELETON1);
-            this.PropertiesArray[21] =gameManager.enemies.Any(x => x.name == Properties.SKELETON2);
-            this.PropertiesArray[22] =gameManager.enemies.Any(x => x.name == Properties.ORC1);
-            this.PropertiesArray[23] =gameManager.enemies.Any(x => x.name == Properties.ORC2);
-            this.PropertiesArray[24] =gameManager.enemies.Any(x => x.name == Properties.DRAGON);
+            this.PropertiesArray[20] = gameManager.enemies.Any(x => x.name == Properties.SKELETON1);
+            this.PropertiesArray[21] = gameManager.enemies.Any(x => x.name == Properties.SKELETON2);
+            this.PropertiesArray[22] = gameManager.enemies.Any(x => x.name == Properties.ORC1);
+            this.PropertiesArray[23] = gameManager.enemies.Any(x => x.name == Properties.ORC2);
+            this.PropertiesArray[24] = gameManager.enemies.Any(x => x.name == Properties.DRAGON);
         }
 
         public override float GetGoalValue(string goalName)

@@ -40,12 +40,11 @@ namespace Assets.Scripts
         public Text BestActionText;
         public bool MCTSActive;
 
-
         public Goal BeQuickGoal { get; private set; }
         public Goal SurviveGoal { get; private set; }
         public Goal GetRichGoal { get; private set; }
         public Goal GainXPGoal { get; private set; }
-        public CurrentStateWorldModel initialState { get; set; }
+        public CurrentStateWorldModel InitialState { get; set; }
         public List<Goal> Goals { get; set; }
         public List<Action> Actions { get; set; }
         public Action CurrentAction { get; private set; }
@@ -157,16 +156,18 @@ namespace Assets.Scripts
                 this.Actions.Add(new Fireball(this, enemy));
             }
 
-            this.initialState = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
+            this.InitialState = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
 
             // Select Decision-Making Algorithm
-            //this.DecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals);
-            //this.DecisionMaking = new MCTS(worldModel);
-            this.DecisionMaking = new MCTSBiasedPlayout(this.initialState, new PropertyWeightedSumHeuristic());
+            //this.DecisionMaking = new DepthLimitedGOAPDecisionMaking(this.InitialState, this.Actions,this.Goals);
+            //this.DecisionMaking = new MCTS(this.InitialState);
+            this.DecisionMaking = new MCTSBiasedPlayout(this.InitialState, new PropertyWeightedSumHeuristic());
         }
 
         void Update()
         {
+            this.InitialState.Update(this.GameManager);
+
             if (Time.time > this.nextUpdateTime || this.GameManager.WorldChanged)
             {
                 this.GameManager.WorldChanged = false;
@@ -208,8 +209,6 @@ namespace Assets.Scripts
 
                 //initialize Decision Making Proccess
                 this.CurrentAction = null;
-
-                this.initialState.Update(this.GameManager);
                 this.DecisionMaking.InitializeDecisionMaking();
             }
 

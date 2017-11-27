@@ -136,8 +136,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
         private Reward Playout(WorldModel initialPlayoutState)
         {
-            //TODO: Optimization 1 trial2: playout paralelization, wiht several playouts at once. Overall result is good, we need less iterations for same results.
-            int threadPoolSize = 10;
+            //TODO: Optimization 1 trial2: playout paralelization, with several playouts at once. Overall result is good, we need less iterations for same results.
+            int threadPoolSize = 3;
             var scores = new float[threadPoolSize]; //
 
             for (int i = 0; i < threadPoolSize; i++)
@@ -153,7 +153,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             return new Reward
             {
                 PlayerID = initialPlayoutState.GetNextPlayer(),
-                Value = scores.Sum() / 10
+                Value = scores.Sum() / threadPoolSize
             };
         }
 
@@ -188,7 +188,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             while (currentNode != null)
             {
                 currentNode.N++;
-                currentNode.Q += /*(this.InitialNode.PlayerID == node.PlayerID) ? */reward.Value /*: -reward.Value*/;
+                currentNode.Q += /*(this.InitialNode.PlayerID == node.PlayerID) ?*/ reward.Value /*: -reward.Value*/;
 
                 //this.UpdateRAVE(currentNode.Action, reward.Value);
 

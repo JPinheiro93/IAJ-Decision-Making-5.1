@@ -55,7 +55,7 @@ namespace Assets.Scripts.GameManager
             //Win
             else if (money >= 25)
             {
-                return 1.0f * (timeLeft / 200); //Bonus points for finishing first.
+                return 1.0f + (timeLeft / 200); //Bonus points for finishing first.
             }
             
             //Score called on a non-terminal state.
